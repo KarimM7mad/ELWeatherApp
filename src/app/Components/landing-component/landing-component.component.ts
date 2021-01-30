@@ -25,9 +25,8 @@ export class LandingComponentComponent implements OnInit {
     //     // d3.select('p').value(this.ipp.ip);
 
     //   });
+    // console.log("after subscibe service");
 
-    console.log("after subscibe service");
-    d3.select('p').style('background-color', 'green');
 
     console.log("landingCompInit Finished");
   }
@@ -36,7 +35,12 @@ export class LandingComponentComponent implements OnInit {
     console.log("onClick Started");
     const infoo = await this.srv.getPositionWeather();
 
-    d3.select('p').text(JSON.stringify(infoo));
+    let r = Math.floor(Math.random() * 255);
+    let g = Math.floor(Math.random() * 255);
+    let b = Math.floor(Math.random() * 255);
+
+    d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')').text(JSON.stringify(infoo));
+
     console.log("onClick ended");
   }
 

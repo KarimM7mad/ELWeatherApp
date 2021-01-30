@@ -1,7 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
 import { IipSrc } from '../ipSrc';
+
+
+import { Observable, of, throwError } from "rxjs";
+import { catchError, map, retry } from 'rxjs/operators';
 
 
 @Injectable()
@@ -15,19 +18,10 @@ export class WorldWeatherOnlineService implements OnInit {
 
 
   constructor(private http: HttpClient) {
-
-    // await this.getIpSrcObservable().subscribe(res => this.assignIpSrc(res));
-    this.getTheCurrIp();
     console.log("finished initForService");
-
-
   }
 
-
-
   ngOnInit() {
-
-    // await this.getIpSrcObservable().subscribe(res => this.assignIpSrc(res));
     this.getTheCurrIp();
     console.log("finished initForService");
 
@@ -37,42 +31,40 @@ export class WorldWeatherOnlineService implements OnInit {
   private async getTheCurrIp() {
     const promise = await this.getIpSrcObservable().toPromise();
     console.log("promiseIP =[" + promise.ip + "]");
-    // console.log("IP =[" + this.ipAddress + "]");
-    // console.log("IP =[" + this.ipAddress + "]");
-    // return promise.ip;
-
     this.ipAddress = promise.ip;
     console.log("IP =[" + this.ipAddress + "]");
-
-
-
-    // console.log("elIPAdreess");
-    // console.log(promise.ip);
-
   }
-
 
   getIpSrcObservable(): Observable<IipSrc> {
-    return this.http.get<IipSrc>("https://api.ipify.org/",
-      {
-        params: { 'format': "json" },
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return this.http.get<IipSrc>("/ipify", { params: { 'format': "json" }, headers: { 'Content-Type': 'application/json' } })
+      .pipe(retry(1), catchError(this.handleError))
+      ;
   }
+
+
+  handleError(error) {
+    let errorMessage = '';
+    if (error.error instanceof ErrorEvent) {
+      // client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.log("ELERR MSGG");
+    console.log(errorMessage);
+    return throwError(errorMessage);
+  }
+
+
+
 
   /**
    * getPositionWeather
    */
   public getPositionWeather() {
-
-    // return this.getIpSrcObservable();
-
-    // return this.getIpSrcObservable();
-
     this.getTheCurrIp();
     console.log("IP in getPosWeather=[" + this.ipAddress + "]");
-
 
     const opts = new HttpParams()
       .set('q', this.ipAddress)
