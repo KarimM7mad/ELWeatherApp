@@ -1,2 +1,25 @@
-<h1 style="background-color: yellow;">THIS IS THE APP Component HTML</h1>
-<router-outlet></router-outlet>
+<nav class="container-fluid navbar navbar-expand-sm navbar-dark bg-dark">
+  <!-- SIDE TITLE -->
+  <a class="navbar-brand" href="/">{{title}}</a>
+
+  <div class="container-fluid">
+    <ul class="navbar-nav mr-auto">
+
+      <!-- Landing Btn -->
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/landing']" routerLinkActive="router-link-active">Landing</a>
+      </li>
+
+      <!-- Landing DashBoard Btn -->
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/cityDashboard']" routerLinkActive="router-link-active">Dashboard</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+
+<div style="margin:3em 3em 3em 3em; background-color: green">
+  <router-outlet></router-outlet>
+</div>

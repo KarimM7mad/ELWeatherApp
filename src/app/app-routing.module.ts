@@ -5,6 +5,7 @@ import { CityWeatherDashboardComponent } from './Components/city-weather-dashboa
 import { LandingComponentComponent } from './Components/landing-component/landing-component.component';
 
 const routes: Routes = [
+  { path: '', component: LandingComponentComponent },
   { path: 'landing', component: LandingComponentComponent },
   { path: 'cityDashboard', component: CityWeatherDashboardComponent }
 

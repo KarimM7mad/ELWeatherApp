@@ -36,9 +36,8 @@ export class WorldWeatherOnlineService implements OnInit {
   }
 
   getIpSrcObservable(): Observable<IipSrc> {
-    return this.http.get<IipSrc>("/ipify", { params: { 'format': "json" }, headers: { 'Content-Type': 'application/json' } })
-      .pipe(retry(1), catchError(this.handleError))
-      ;
+    return this.http.get<IipSrc>("https://api.ipify.org/", { params: { 'format': "json" }, headers: { 'Content-Type': 'application/json' } })
+      .pipe(retry(1), catchError(this.handleError));
   }
 
 
@@ -56,22 +55,30 @@ export class WorldWeatherOnlineService implements OnInit {
     return throwError(errorMessage);
   }
 
-
-
-
   /**
    * getPositionWeather
    */
-  public getPositionWeather() {
-    this.getTheCurrIp();
-    console.log("IP in getPosWeather=[" + this.ipAddress + "]");
+  public getPositionWeatherPromise(q: string, tp: string) {
+
+    if (q == null || q.length === 0) {
+      this.getTheCurrIp();
+      if (this.ipAddress.length === 0)
+        return null;
+      q = this.ipAddress;
+    }
+
+    if (tp == null || tp.length === 0) {
+      tp = '1';
+    }
+
+    console.log("q in getPosWeather=[" + q + "]");
 
     const opts = new HttpParams()
-      .set('q', this.ipAddress)
+      .set('q', q)
       .set('key', this.apiKey)
       .set('format', this.format)
       .set('includelocation', 'yes')
-      .set('tp', '1');
+      .set('tp', tp);
 
     return this.http.get(this.apiUrl, { params: opts }).toPromise();
 

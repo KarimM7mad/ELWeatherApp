@@ -1,6 +1,43 @@
-<div class="mainDivBkgnd">
-    <button (click)="onClick()">refresh</button>
-    <p>landing-component works!</p>
+<div class="container-fluid" style="padding: 3em 3em 3em 3em; background-color: orange">
+
+  <div class="row justify-content-center">
+    <p class="col-3">landing-component works!</p>
+    <h1 class="col-3">X</h1>
+    <button (click)="refresh()">refresh</button>
+    <button (click)="refresh()">refresh my location</button>
+    
+  </div>
+
+  <div class="row container-fluid justify-content-around" style="background-color: black;">
+
+    <div class="card col-3" >
+      <img class="card-img-top" src="..." alt="weather Img">
+      <div class="card-body">
+        <h5 class="card-title">weather</h5>
+        <p class="card-text">XXXXXXX</p>
+        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more</a>
+      </div>
+    </div>
+
+    <div class="card col-3" >
+      <img class="card-img-top" src="..." alt="weather Img">
+      <div class="card-body">
+        <h5 class="card-title">weather</h5>
+        <p class="card-text">XXXXXXX</p>
+        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more</a>
+      </div>
+    </div>
+
+
+
+    
+  </div>
+
+
+
+
+
+
+
+
 </div>
-
-
