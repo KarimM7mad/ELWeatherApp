@@ -1,0 +1,6 @@
+{  
+    "/*": {  
+       "target": "https://api.ipify.org/",  
+       "secure": false
+    }  
+ } 
