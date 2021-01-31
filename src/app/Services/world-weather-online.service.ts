@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { IipSrc } from '../ipSrc';
+import { IipSrc } from '../PromisesTemplates/ipSrc';
 
 
 import { Observable, of, throwError } from "rxjs";
@@ -58,7 +58,7 @@ export class WorldWeatherOnlineService implements OnInit {
   /**
    * getPositionWeather
    */
-  public getPositionWeatherPromise(q: string, tp: string) {
+  public getPositionWeather(q: string, tp: string) {
 
     if (q == null || q.length === 0) {
       this.getTheCurrIp();
@@ -80,8 +80,7 @@ export class WorldWeatherOnlineService implements OnInit {
       .set('includelocation', 'yes')
       .set('tp', tp);
 
-    return this.http.get(this.apiUrl, { params: opts }).toPromise();
-
+    return this.http.get(this.apiUrl, { params: opts }).pipe(retry(1), catchError(this.handleError));
   }
 
   public assignIpSrc(x: IipSrc) {

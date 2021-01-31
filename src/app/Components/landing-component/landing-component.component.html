@@ -4,33 +4,22 @@
     <p class="col-3">landing-component works!</p>
     <h1 class="col-3">X</h1>
     <button (click)="refresh()">refresh</button>
-    <button (click)="refresh()">refresh my location</button>
-    
+    <button (click)="raiseModal()">refresh my location</button>
+
   </div>
 
   <div class="row container-fluid justify-content-around" style="background-color: black;">
 
-    <div class="card col-3" >
-      <img class="card-img-top" src="..." alt="weather Img">
+    <div *ngFor="let item of cardsData" class="card col-3">
+      <img class="card-img-top" src="{{item.current_condition[0].weatherIconUrl[0].value}}" alt="weather Img">
       <div class="card-body">
-        <h5 class="card-title">weather</h5>
-        <p class="card-text">XXXXXXX</p>
-        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more</a>
-      </div>
-    </div>
-
-    <div class="card col-3" >
-      <img class="card-img-top" src="..." alt="weather Img">
-      <div class="card-body">
-        <h5 class="card-title">weather</h5>
-        <p class="card-text">XXXXXXX</p>
-        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more</a>
+        <h5 class="card-title">{{item.current_condition[0].weatherDesc[0].value}}</h5>
+        <p class="card-text">{{item.current_condition[0].temp_C}}</p>
+        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more at "{{item.nearest_area[0].region[0].value}}"</a>
       </div>
     </div>
 
 
-
-    
   </div>
 
 
