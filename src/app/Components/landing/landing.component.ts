@@ -4,8 +4,8 @@ import { WorldWeatherOnlineService } from 'src/app/Services/world-weather-online
 
 @Component({
   selector: 'app-landing-component',
-  templateUrl: './landing-component.component.html',
-  styleUrls: ['./landing-component.component.css']
+  templateUrl: './landing.component.html',
+  styleUrls: ['./landing.component.css']
 })
 export class LandingComponentComponent implements OnInit, OnDestroy {
 

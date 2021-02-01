@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { IipSrc } from '../PromisesTemplates/ipSrc';
+import { IipSrc } from '../PromisesTemplates/IipSrc';
 
 
 import { Observable, of, throwError } from "rxjs";

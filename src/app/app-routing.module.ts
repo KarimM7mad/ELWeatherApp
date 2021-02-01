@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { CityWeatherDashboardComponent } from './Components/city-weather-dashboard/city-weather-dashboard.component';
-import { LandingComponentComponent } from './Components/landing-component/landing-component.component';
+import { LandingComponentComponent } from './Components/landing/landing.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponentComponent },
@@ -17,7 +17,7 @@ const routes: Routes = [
 })
 export class AppRoutingModule { }
 export const routingComponents = [
-  LandingComponentComponent, 
+  LandingComponentComponent,
   CityWeatherDashboardComponent
 
 ];
