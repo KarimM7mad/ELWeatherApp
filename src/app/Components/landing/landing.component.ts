@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as d3 from 'd3';
 import { WorldWeatherOnlineService } from 'src/app/Services/world-weather-online.service';
+import { DataPickerDialogComponent } from '../data-picker-dialog/data-picker-dialog.component';
 
 @Component({
   selector: 'app-landing-component',
@@ -31,7 +33,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   // };
 
 
-  constructor(private srv: WorldWeatherOnlineService) { }
+  constructor(private srv: WorldWeatherOnlineService, private modalService: NgbModal) { }
 
 
   async ngOnInit() {
@@ -113,11 +115,18 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    // if (this.cardsData.length > 0) {
-    //   localStorage.removeItem("cardsData");
-    //   localStorage.setItem("cardsData", JSON.stringify(this.cardsData));
-    // }
+    if (this.cardsData.length > 0) {
+      localStorage.removeItem("cardsData");
+      localStorage.setItem("cardsData", JSON.stringify(this.cardsData));
+    }
 
   }
+
+
+  openLocationModal() {
+    const modalRef = this.modalService.open(DataPickerDialogComponent);
+    modalRef.componentInstance.name = 'World';
+  }
+
 
 }

@@ -4,7 +4,9 @@ import { HttpClientModule } from '@angular/common/http'
 
 import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { WorldWeatherOnlineService } from './Services/world-weather-online.service'
+import { WorldWeatherOnlineService } from './Services/world-weather-online.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DataPickerDialogComponent } from './Components/data-picker-dialog/data-picker-dialog.component'
 
 @NgModule({
   declarations: [
@@ -14,11 +16,13 @@ import { WorldWeatherOnlineService } from './Services/world-weather-online.servi
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule
   ],
   providers: [
     WorldWeatherOnlineService
   ],
+  entryComponents: [DataPickerDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

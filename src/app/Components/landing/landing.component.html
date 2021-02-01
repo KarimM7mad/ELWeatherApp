@@ -1,11 +1,16 @@
 <div class="container-fluid" style="padding: 3em 3em 3em 3em; background-color: orange">
 
   <div class="row justify-content-center">
-    <p class="col-3">landing-component works!</p>
-    <h1 class="col-3">X</h1>
-    <button (click)="refresh()">refresh</button>
-    <button (click)="raiseModal()">refresh my location</button>
+    <p class="container col">landing-component works!</p>
+    <h1 class="container col">X</h1>
 
+    <div class="container row col">
+
+      <button (click)="refresh()">refresh</button>
+      <button (click)="raiseModal()">refresh my location</button>
+      <button (click)="openLocationModal()">add another location</button>
+
+    </div>
   </div>
 
   <div class="row container-fluid justify-content-around" style="background-color: black;">
@@ -15,7 +20,8 @@
       <div class="card-body">
         <h5 class="card-title">{{item.current_condition[0].weatherDesc[0].value}}</h5>
         <p class="card-text">{{item.current_condition[0].temp_C}}</p>
-        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more at "{{item.nearest_area[0].region[0].value}}"</a>
+        <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more at
+          "{{item.nearest_area[0].region[0].value}}"</a>
       </div>
     </div>
 

@@ -1,0 +1,51 @@
+  <div class="modal-header" style="background-color: red;">
+    <h4 class="modal-title">choose ur location!</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+
+  <div class="modal-body">
+
+    <form>
+      <div class="form-row">
+
+
+        <div class="col-12">
+          <label>Country</label>
+          <select class="custom-select" required>
+            <option selected disabled value="">Choose...</option>
+            <option>Egypt</option>
+            <option>Libya</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label>State</label>
+          <select class="custom-select" required>
+            <option selected disabled value="">Choose...</option>
+            <option>alex</option>
+            <option>Cairo</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label>City</label>
+          <select class="custom-select" required>
+            <option selected disabled value="">Choose...</option>
+            <option>...</option>
+          </select>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+
+
+
+  <div class="modal-footer justify-content-around" style="background-color: red;">
+    <button type="button" class="btn btn-success" (click)="activeModal.close('Close click')">Okay</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.close('Close click')">Close</button>
+  </div>
