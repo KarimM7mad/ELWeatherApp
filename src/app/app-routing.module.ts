@@ -19,5 +19,4 @@ export class AppRoutingModule { }
 export const routingComponents = [
   LandingComponentComponent,
   CityWeatherDashboardComponent
-
 ];

@@ -1,5 +1,5 @@
   <div class="modal-header" style="background-color: red;">
-    <h4 class="modal-title">choose ur location!</h4>
+    <h4 class="modal-title">choose ur location! </h4>
     <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -11,32 +11,32 @@
     <form>
       <div class="form-row">
 
-
-        <div class="col-12">
+        <div *ngIf="!isEmptyObject(locationsStored)" class="col-12">
           <label>Country</label>
-          <select class="custom-select" required>
+          <select [(ngModel)]="formResults.country" class="custom-select" required>
             <option selected disabled value="">Choose...</option>
-            <option>Egypt</option>
-            <option>Libya</option>
+            <option *ngFor="let item of locationsStored | keyvalue" [ngValue]="item.key">{{item.key}}</option>
           </select>
         </div>
 
-        <div class="col-12">
+        <div *ngIf="formResults.country.length > 0" class="col-12">
           <label>State</label>
-          <select class="custom-select" required>
+          <select [(ngModel)]="formResults.state" class="custom-select" required>
             <option selected disabled value="">Choose...</option>
-            <option>alex</option>
-            <option>Cairo</option>
+            <option *ngFor="let item2 of locationsStored[formResults.country] | keyvalue" [ngValue]="item2.key">
+              {{item2.key}}</option>
           </select>
         </div>
 
-        <div class="col-12">
+        <div *ngIf="(formResults.country.length > 0) && (formResults.state.length > 0)" class="col-12">
           <label>City</label>
-          <select class="custom-select" required>
+          <select [(ngModel)]="formResults.city" class="custom-select">
             <option selected disabled value="">Choose...</option>
-            <option>...</option>
+            <option *ngFor="let item3 of locationsStored[formResults.country][formResults.state] | keyvalue"
+              [ngValue]="item3.key">{{item3.key}}</option>
           </select>
         </div>
+
 
       </div>
     </form>
