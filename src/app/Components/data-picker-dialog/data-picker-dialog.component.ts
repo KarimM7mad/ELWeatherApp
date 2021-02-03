@@ -1,7 +1,5 @@
-import { Component, OnInit, Input, Output } from '@angular/core';
-
-import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-data-picker-dialog',
@@ -10,24 +8,35 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DataPickerDialogComponent implements OnInit {
 
+  public country = "";
+  public state = "";
+
   @Output()
-  public formResults = { country: '', state: '', city: '' };
+  passEntry: EventEmitter<any> = new EventEmitter();
 
+  @Input()
   public locationsStored: {};
+  @Input()
+  public opennedFrom: String;
 
-  public openningSrcId: String;
-
-  constructor(public activeModal: NgbActiveModal) {
-
-  }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit(): void {
-    this.locationsStored = JSON.parse(localStorage.getItem('locations'));
+    // no location is sent
+    // if (this.isEmptyObject(this.locationsStored)) {
+    //   this.passEntry.emit({ 'error': "locations not found" })
+    // }
   }
 
-  closeModal() {
-    console.log(JSON.stringify(this.formResults));
-    this.activeModal.close(this.formResults);
+  submitChoices() {
+    var choicesMade = {
+      country: this.country,
+      state: this.state,
+      openningSrc: this.opennedFrom
+    }
+    console.log("choices to be emitted");
+    console.log(JSON.stringify(choicesMade));
+    this.passEntry.emit(choicesMade);
   }
 
   isEmptyObject(obj) {

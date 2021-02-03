@@ -17,19 +17,19 @@ export class WorldWeatherOnlineService implements OnInit {
 
 
   constructor(private http: HttpClient) {
-    console.log("finished initForService");
+    this.getTheCurrIp();
+    console.log("finished WorldWeatherOnlineService constructor");
   }
 
   ngOnInit() {
-    this.getTheCurrIp();
-    console.log("finished initForService");
+    console.log("finished WorldWeatherOnlineService OnInit");
   }
 
-  private async getTheCurrIp() {
-    const promise = await this.getCurrClientIP().toPromise();
-    console.log("promiseIP =[" + promise.ip + "]");
-    this.ipAddress = promise.ip;
-    console.log("IP =[" + this.ipAddress + "]");
+  private getTheCurrIp() {
+    this.getCurrClientIP().subscribe(res => {
+      this.ipAddress = res.ip;
+      console.log("IP =[" + this.ipAddress + "]");
+    });
   }
 
   handleError(error) {
@@ -53,7 +53,7 @@ export class WorldWeatherOnlineService implements OnInit {
   /**
    * getPositionWeather
    */
-  public getPositionWeather(q: string, tp: string) {
+  public getPositionWeather(q?: string, tp?: string) {
 
     if (q == null || q.length === 0) {
       this.getTheCurrIp();

@@ -2,5 +2,9 @@
    "/ipify": {
       "target": "https://api.ipify.org/",
       "secure": false
+   },
+   "/universal-tutorial": {
+      "target": "https://www.universal-tutorial.com/api/*",
+      "secure": false
    }
 }

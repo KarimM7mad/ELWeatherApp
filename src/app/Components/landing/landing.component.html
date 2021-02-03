@@ -1,14 +1,15 @@
 <div class="container-fluid" style="padding: 3em 3em 3em 3em; background-color: orange">
 
   <div class="row justify-content-center">
-    <p class="container col">landing-component works!</p>
-    <h1 class="container col">X</h1>
+    <p class="container col-2">landing-component works!</p>
+    <h1 class="container col-2">X</h1>
 
-    <div class="container row col">
+    <div class="container row col-8">
 
-      <button (click)="refresh()">refresh</button>
-      <button (click)="raiseModal()">refresh my location</button>
-      <button (click)="openLocationModal()">add another location</button>
+      <button class="col" (click)="refresh()">refresh</button>
+      <button class="col" (click)="addDummyData()">addDummyData</button>
+      <button [disabled]="!this.canOpenModal" class="col" (click)="openLocationModal()">openLocationModal</button>
+      <button class="col" (click)="getLocations()">tgroba Btn</button>
 
     </div>
   </div>

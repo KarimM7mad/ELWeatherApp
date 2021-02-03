@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as d3 from 'd3';
 import { LocationService } from 'src/app/Services/countries-and-states-service/countries-and-states.service';
 import { WorldWeatherOnlineService } from 'src/app/Services/world-weather-online-service/world-weather-online.service';
@@ -12,6 +12,9 @@ import { DataPickerDialogComponent } from '../data-picker-dialog/data-picker-dia
 })
 export class LandingComponentComponent implements OnInit, OnDestroy {
   public cardsData = [];
+  public locationsJSONtoBeStored = {};
+  public closeResult = '';
+  public canOpenModal = false;
 
   // public landingCompData : {
   //   location: apiResponse.data.request[0].query,
@@ -39,98 +42,88 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    console.log('landingCompInit');
+    console.log('landingCompInit Started');
 
     if (localStorage.hasOwnProperty('cardsData')) {
       this.cardsData = JSON.parse(localStorage.getItem('cardsData'));
     }
 
-    // get locations if not added Before
-    if (localStorage.hasOwnProperty('locations')) {
-      var locationsJSONtoBeStored = {};
-      this.locationService.getCountriesList().subscribe(countriesListReceived => {
+    this.weatherService.getCurrClientIP().subscribe(res => {
+      d3.selectAll('h1').text(res.ip);
 
-        console.log("COUNTRIES received");
-        console.log(countriesListReceived);
+      let r = Math.floor(Math.random() * 255);
+      let g = Math.floor(Math.random() * 255);
+      let b = Math.floor(Math.random() * 255);
 
-        countriesListReceived.forEach(country => {
-
-
-          // adding placeholders for stages of each country
-          locationsJSONtoBeStored[country] = {};
-          this.locationService.getStatesInCountry(country).subscribe(statesListReceived => {
-            // adding placeholders for Cities of each state and adding the cities 
-            statesListReceived.forEach(statee => {
-              this.locationService.getCitiesInState(statee).subscribe(citiesListReceived => { locationsJSONtoBeStored[country][statee] = citiesListReceived; });
-            });
-          });
-        });
-      });
-      console.log(JSON.stringify(locationsJSONtoBeStored));
-      localStorage.setItem('locations', JSON.stringify(locationsJSONtoBeStored));
-    }
+      d3.select('h1').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
+    });
     console.log('landingCompInit Finished');
   }
 
-  // async refresh() {
-  async refresh() {
+  refresh() {
     console.log('refresh Started');
 
-    // await this.weatherService
-    //   .getPositionWeather('Cairo', '1')
-    //   .toPromise()
-    //   .then((dataReceived) => {
-    //     this.addToCardsIfNotExist(dataReceived);
-    //   });
+    this.weatherService.getCurrClientIP().subscribe(res => {
+      d3.selectAll('h1').text(res.ip);
+      let r = Math.floor(Math.random() * 255);
+      let g = Math.floor(Math.random() * 255);
+      let b = Math.floor(Math.random() * 255);
+      d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
+      console.log('refresh ended');
+    });
 
-    // this.addToCardsIfNotExist(infoo["data"]);
-    const ipp = await this.weatherService.getCurrClientIP().toPromise();
-    d3.selectAll('h1').text(ipp.ip);
-
-    let r = Math.floor(Math.random() * 255);
-    let g = Math.floor(Math.random() * 255);
-    let b = Math.floor(Math.random() * 255);
-
-    d3.select('p').style(
-      'background-color',
-      'rgb(' + r + ',' + g + ',' + b + ')'
-    );
-
-    // console.log(JSON.stringify(infoo["data"]));
-
-    console.log('refresh ended');
   }
 
-  async raiseModal() {
-    console.log('raiseModal Called');
+  addDummyData() {
+    console.log('addDummyData Called');
 
-    // await this.weatherService
-    //   .getPositionWeather('Alexandria', '1')
-    //   .toPromise()
-    //   .then((dataReceived) => {
-    //     this.addToCardsIfNotExist(dataReceived);
-    //   });
+    this.weatherService.getPositionWeather('Alexandria', '1').subscribe((dataReceived) => {
+      this.addToCardsIfNotExist(dataReceived);
 
-    // this.addToCardsIfNotExist(infoo["data"]);
+      let r = Math.floor(Math.random() * 255);
+      let g = Math.floor(Math.random() * 255);
+      let b = Math.floor(Math.random() * 255);
 
-    let r = Math.floor(Math.random() * 255);
-    let g = Math.floor(Math.random() * 255);
-    let b = Math.floor(Math.random() * 255);
+      d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
 
-    d3.select('p').style(
-      'background-color',
-      'rgb(' + r + ',' + g + ',' + b + ')'
-    );
+      console.log('addDummyData call ended');
+    });
 
-    // console.log(JSON.stringify(infoo["data"]));
-
-    console.log('raiseModal call ended');
   }
 
   openLocationModal() {
+    if (!this.canOpenModal) {
+      return;
+    }
+    // if (this.locationsJSONtoBeStored && (Object.keys(this.locationsJSONtoBeStored).length === 0)) {
+    //   this.getLocations();
+    // }
+
+    // const modalOptions = {
+    //   backdrop: true,
+    //   keyboard: true,
+    //   focus: true,
+    //   show: true,
+    //   ignoreBackdropClick: false,
+    //   class: 'modal-dialog modal-dialog-centered',
+    //   animated: true,
+    //   // role: 'document'
+    // };
+
     const modalRef = this.locationModal.open(DataPickerDialogComponent);
     modalRef.componentInstance.openningSrcId = 'el EGGG';
+    modalRef.componentInstance.locationsStored = this.locationsJSONtoBeStored;
+    modalRef.componentInstance.passEntry.subscribe(
+      arg => {
+        console.log("choices received");
+        console.log(JSON.stringify(arg));
+        modalRef.close();
+      }
+    );
+
   }
+
+
 
   addToCardsIfNotExist(dataToAdd) {
     console.log('THE NEW JSON TO BE ADDED IS:' + JSON.stringify(dataToAdd));
@@ -138,7 +131,6 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < this.cardsData.length; i++) {
       if (this.cardsData[i]['nearest_area'][0]['region'][0]['value'] == dataToAdd['nearest_area'][0]['region'][0]['value']) {
-        console.log('SIZE OF CARDS DATA AFTER ADITION:' + this.cardsData.length);
         return;
       }
     }
@@ -156,4 +148,39 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
     }
 
   }
+
+
+  getLocations() {
+    this.locationService.getCountriesList().subscribe(
+      (countriesListReceived) => {
+        d3.select('p').text("wait while getting data");
+        console.log("COUNTRIES received");
+        console.log(countriesListReceived.length);
+        console.log(countriesListReceived);
+        countriesListReceived.forEach((country) => this.locationsJSONtoBeStored[country] = {});
+      },
+      (err) => {
+        console.error(err);
+      }, () => {
+        Object.keys(this.locationsJSONtoBeStored).forEach(
+          (country) => {
+            this.locationService.getStatesInCountry(country).subscribe(
+              (statesListReceived) => {
+                console.log("states in " + country);
+                console.log(statesListReceived.length);
+                console.log(statesListReceived);
+                // adding placeholders for Cities of each state and adding the cities 
+                this.locationsJSONtoBeStored[country] = statesListReceived;
+              },
+              (err) => console.error(err),
+            );
+          });
+        this.canOpenModal = true;
+        d3.select('p').text("data is obtained");
+        console.log(JSON.stringify(this.locationsJSONtoBeStored));
+        localStorage.setItem('locations', JSON.stringify(this.locationsJSONtoBeStored));
+      }
+    );
+  }
+
 }
