@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as d3 from 'd3';
+import { from, Subject } from 'rxjs';
+import { count, map, mergeMap, reduce, take } from 'rxjs/operators';
 import { LocationService } from 'src/app/Services/countries-and-states-service/countries-and-states.service';
 import { WorldWeatherOnlineService } from 'src/app/Services/world-weather-online-service/world-weather-online.service';
 import { DataPickerDialogComponent } from '../data-picker-dialog/data-picker-dialog.component';
@@ -15,6 +17,8 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   public locationsJSONtoBeStored = {};
   public closeResult = '';
   public canOpenModal = false;
+
+  public isAllFinishedd = new Subject<boolean>();
 
   // public landingCompData : {
   //   location: apiResponse.data.request[0].query,
@@ -92,6 +96,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   }
 
   openLocationModal() {
+
     if (!this.canOpenModal) {
       return;
     }
@@ -123,8 +128,6 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
   }
 
-
-
   addToCardsIfNotExist(dataToAdd) {
     console.log('THE NEW JSON TO BE ADDED IS:' + JSON.stringify(dataToAdd));
     console.log('SIZE OF CARDS DATA BEFORE:' + this.cardsData.length);
@@ -151,13 +154,22 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
 
   getLocations() {
+
+    this.isAllFinishedd.subscribe(res => {
+      console.log(res);
+      this.canOpenModal = res;
+    }
+    );
+
     this.locationService.getCountriesList().subscribe(
       (countriesListReceived) => {
         d3.select('p').text("wait while getting data");
         console.log("COUNTRIES received");
         console.log(countriesListReceived.length);
         console.log(countriesListReceived);
-        countriesListReceived.forEach((country) => this.locationsJSONtoBeStored[country] = {});
+        countriesListReceived.forEach(
+          (country) => this.locationsJSONtoBeStored[country] = {}
+        );
       },
       (err) => {
         console.error(err);
@@ -171,16 +183,34 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
                 console.log(statesListReceived);
                 // adding placeholders for Cities of each state and adding the cities 
                 this.locationsJSONtoBeStored[country] = statesListReceived;
+
+                // if this is the last country, toggle the button selectable
+                if (Object.keys(this.locationsJSONtoBeStored).indexOf(country) === (Object.keys(this.locationsJSONtoBeStored).length - 1)) {
+                  console.log("THIS WAS LAST OF ALL LASTS");
+                  this.isAllFinishedd.next(true);
+                }
+
               },
               (err) => console.error(err),
             );
           });
-        this.canOpenModal = true;
+        // this.canOpenModal = true;
         d3.select('p').text("data is obtained");
         console.log(JSON.stringify(this.locationsJSONtoBeStored));
         localStorage.setItem('locations', JSON.stringify(this.locationsJSONtoBeStored));
       }
     );
   }
+
+
+
+
+
+
+
+
+}
+
+
 
 }

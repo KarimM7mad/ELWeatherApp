@@ -68,9 +68,9 @@ export class LocationService implements OnInit {
 
   public getCountriesList(): Observable<any[]> {
     if (this.headersDataNeeded.accessToken.length == 0 || this.headersDataNeeded.accessToken === '') {
-    this.getAccessToken().subscribe(
-      (res) => this.headersDataNeeded.accessToken = res["auth_token"],
-      (err) => console.log("Error in get AccessToken" + err));
+      this.getAccessToken().subscribe(
+        (res) => this.headersDataNeeded.accessToken = res["auth_token"],
+        (err) => console.log("Error in get AccessToken" + err));
     }
     //prepare the getStates Observable with the country Name given
     var requestHeaders = {
@@ -90,6 +90,22 @@ export class LocationService implements OnInit {
         retry(1),
         catchError(this.handleError));
   }
+
+  public getCountriesList2(): Observable<any[]> {
+    if (this.headersDataNeeded.accessToken.length == 0 || this.headersDataNeeded.accessToken === '') {
+      this.getAccessToken().subscribe(
+        (res) => this.headersDataNeeded.accessToken = res["auth_token"],
+        (err) => console.log("Error in get AccessToken" + err));
+    }
+    //prepare the getStates Observable with the country Name given
+    var requestHeaders = {
+      'Accept': "application/json",
+      'Authorization': 'Bearer ' + this.headersDataNeeded.accessToken
+    }
+    return this.http.get<any[]>(this.urls_universalTutorial.getCountriesListURL, { headers: requestHeaders });
+  }
+
+
 
   public getStatesInCountry(countryName: String): Observable<any[]> {
     if (countryName.length === 0 || countryName == "") {
@@ -115,6 +131,34 @@ export class LocationService implements OnInit {
         retry(1),
         catchError(this.handleError));
   }
+
+
+  public getStatesInCountry2(countryName: String): Observable<any[]> {
+    if (countryName.length === 0 || countryName == "") {
+      return null;
+    }
+    // if (this.headersDataNeeded.accessToken.length == 0 || this.headersDataNeeded.accessToken === '') {
+    this.getAccessToken().subscribe(
+      (res) => this.headersDataNeeded.accessToken = res["auth_token"],
+      (err) => console.log("Error in get AccessToken" + err));
+    // }
+    //prepare the getStates Observable with the country Name given
+    var requestHeaders = {
+      'Accept': "application/json",
+      'Authorization': 'Bearer ' + this.headersDataNeeded.accessToken
+    }
+    return this.http
+      .get<any[]>(
+        this.urls_universalTutorial.getStatesInCountryURL + countryName,
+        { headers: requestHeaders }
+      );
+      // .pipe(
+      //   map(receivedData => { return receivedData.map(element => { countryName: element["state_name"] }) }),
+      //   retry(1),
+      //   catchError(this.handleError));
+  }
+
+
 
   // public getCitiesInState(stateName: String): Observable<any[]> {
   //   if (stateName.length === 0 || stateName == "") {
