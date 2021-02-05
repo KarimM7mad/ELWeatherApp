@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as d3 from 'd3';
 import { Subject } from 'rxjs';
 import { LocationService } from 'src/app/Services/countries-and-states-service/countries-and-states.service';
 import { WorldWeatherOnlineService } from 'src/app/Services/world-weather-online-service/world-weather-online.service';
 import { DataPickerDialogComponent } from '../data-picker-dialog/data-picker-dialog.component';
+
 
 @Component({
   selector: 'app-landing-component',
@@ -41,16 +43,15 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   constructor(
     private weatherService: WorldWeatherOnlineService,
     private locationService: LocationService,
-    private locationModal: NgbModal
+    private locationModal: NgbModal,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    console.log('landingCompInit Started');
-
+    // console.log('landingCompInit Started');
     if (localStorage.hasOwnProperty('cardsData')) {
       this.cardsData = JSON.parse(localStorage.getItem('cardsData'));
     }
-
     // open modal if locations exist
     if (localStorage.hasOwnProperty('locations')) {
       this.locationsJSON = JSON.parse(localStorage.getItem('locations'));
@@ -58,19 +59,17 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
         this.canOpenModal = true;
       }
     }
-
     this.weatherService.getCurrClientIP().subscribe(res => {
       let r = Math.floor(Math.random() * 127) + 128;
       let g = Math.floor(Math.random() * 127) + 128;
       let b = Math.floor(Math.random() * 127) + 128;
       d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')').text("IP from NgOnInit:" + res.ip);
     });
-    console.log('landingCompInit Finished');
+    // console.log('landingCompInit Finished');
   }
 
   getCurrIP() {
-    console.log('refresh Started');
-
+    // console.log('refresh Started');
     this.weatherService.getCurrClientIP().subscribe(res => {
       let r = Math.floor(Math.random() * 127) + 128;
       let g = Math.floor(Math.random() * 127) + 128;
@@ -91,8 +90,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
   }
 
   addDummyData() {
-    console.log('addDummyData Called');
-
+    // console.log('addDummyData Called');
     this.weatherService.getPositionWeather('Alexandria', '1').subscribe((dataReceived) => {
       this.addToCardsIfNotExist(dataReceived);
       let r = Math.floor(Math.random() * 255);
@@ -132,6 +130,8 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
         console.log("choices received");
         console.log(JSON.stringify(arg));
         modalRef.close();
+        this.router.navigate(["/cityDashboard"]);
+
         // go to Dashboard with the data 
 
       }
