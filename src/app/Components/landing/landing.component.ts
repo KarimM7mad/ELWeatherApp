@@ -31,7 +31,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy, DoCheck {
     if (this.cardsData.length === 0) {
       this.addCurrIPsWeather();
     }
-    if (!this.isEmptyObject(this.locationsJSON)) {
+    if (this.isEmptyObject(this.locationsJSON)) {
       this.getLocations();
     }
   }
@@ -232,7 +232,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy, DoCheck {
               (err) => console.error(err),
             );
           });
-        d3.select('p').text("data is obtained");
+        d3.select('p').text("getting locations data, please wait...");
       }
     );
     console.log("GETTING LOCATIONS FINISED");
