@@ -1,4 +1,5 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, DoCheck, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 // import { time } from 'console';
 import * as d3 from 'd3';
 
@@ -9,7 +10,9 @@ import * as d3 from 'd3';
 })
 export class CityWeatherDashboardComponent implements OnInit {
 
+  // @Input()
   public weatherDetails = {};
+
 
   public extractedData = {
 
@@ -21,7 +24,12 @@ export class CityWeatherDashboardComponent implements OnInit {
 
   };
 
-  constructor() { }
+  constructor(private route: ActivatedRoute) {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      let index = Number.parseInt(params.get('cardIndex'));
+      this.weatherDetails = JSON.parse(localStorage.getItem('cardsData'))[index];
+    })
+  }
 
   onResize(event): void {
     this.draw();
@@ -30,7 +38,7 @@ export class CityWeatherDashboardComponent implements OnInit {
   ngOnInit(): void {
     console.log("Dashboard Opened");
     // to obtained By Location
-    this.weatherDetails = JSON.parse(localStorage.getItem("cardsData"))[0];
+    // this.weatherDetails = JSON.parse(localStorage.getItem("cardsData"))[0];
     console.log(JSON.stringify(this.weatherDetails));
     this.extractDataFromWeatherDetailsJSON();
     this.draw();
@@ -39,34 +47,22 @@ export class CityWeatherDashboardComponent implements OnInit {
   public draw() {
     this.showTempTodayLineChart();
     this.showTempIn15DaysLineChart();
-
   }
 
 
 
   public extractDataFromWeatherDetailsJSON() {
-
     // sunrise , sunset, ...
     this.extractedData["astronomyInDay0"] = this.weatherDetails["weather"][0]["astronomy"][0];
-
-    // extract data from 1 day
+    // extract data from one day's hours
     this.weatherDetails["weather"][0]["hourly"].forEach(oneHrWeatherData => {
       this.extractedData.tempInDay0[oneHrWeatherData["time"]] = oneHrWeatherData["tempC"];
-    });
 
+    });
     // get desired Data From each day
     this.weatherDetails["weather"].forEach(oneDayWeatherData => {
       // get temp from each day
       this.extractedData.avgTempCin15Days[oneDayWeatherData.date] = oneDayWeatherData.avgtempC;
-
-      // oneDayWeatherData.array.forEach(hoursWeatherData => {
-
-
-      // });
-
-
-
-      // sunhours.push(element.sunHour);
     });
 
     d3.select('p').text(JSON.stringify(this.extractedData));
@@ -151,7 +147,7 @@ export class CityWeatherDashboardComponent implements OnInit {
     };
     render(dataToView);
   }
-  
+
   showTempTodayLineChart() {
     var dataToView = [];
     // var parseDate = d3.timeParse("%Y-%m-%d");
@@ -174,13 +170,13 @@ export class CityWeatherDashboardComponent implements OnInit {
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
       const xScale = d3.scaleLinear()
-        .domain([(d3.min(data, xValue) ), (d3.max(data, xValue) - (-1))])
+        .domain([(d3.min(data, xValue)), (d3.max(data, xValue) - (-1))])
         // .domain(d3.extent(data, xValue))
         .range([0, innerWidth])
         .nice();
       const yScale = d3.scaleLinear()
         // .domain(d3.extent(data, yValue))
-        .domain([(d3.min(data, yValue)-1), (d3.max(data, yValue) - (-1))])
+        .domain([(d3.min(data, yValue) - 1), (d3.max(data, yValue) - (-1))])
         .range([innerHeight, 0])
         .nice();
       const g = svg.append('g')

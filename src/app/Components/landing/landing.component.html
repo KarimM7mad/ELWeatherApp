@@ -1,48 +1,36 @@
-<div class="container" style="background-color: orange">
-
-
+<div class="container">
   <div class="container">
     <div class="row">
-
-      <button class="col" (click)="getCurrIP()">get Curr Ip</button>
-      <button class="col" (click)="addDummyData()">addDummyData</button>
+      <button class="col" (click)="getCurrWeatherDetailsByIp()">get Current Location Details</button>
+      <button class="col" (click)="addCurrIPsWeather()" disabled>addDummyData</button>
       <button class="col" (click)="openLocationModal()" [disabled]="!this.canOpenModal">openLocationModal</button>
-      <!-- <button class="col" (click)="getLocations()">tgroba Btn</button> -->
       <button class="col" (click)="getLocations()">get locations </button>
     </div>
   </div>
-
   <p>landing-component works!</p>
-  <p>landing-component works!</p>
-
-  <h1 style="text-align: center; background-color: azure;">Weather Cards</h1>
-
-  <div class="container m-auto" style="background-color: black;">
+  <h1 style="text-align: center; background-color: rgb(159, 141, 194);">Weather Cards</h1>
+  <div class="container m-auto" style="background-color: rgb(79, 49, 139);">
     <div class="row row-col-3 mx-auto">
-
-      <!-- <div *ngIf="cardsData.length===0" class="card mb-3 mx-auto">
-        <div class="card-body" style="background-color: white;">
-          <h1 class="card-title">Get location By clicking on open locationModal</h1>
-        </div>
-      </div> -->
-
-      <div *ngFor="let item of cardsData" class="card mb-3 mx-auto">
+      <div *ngFor="let item of cardsData; index as i" class="card mb-3 mx-auto">
         <div class="row no-gutters">
           <div class="col-4">
             <img src="{{item.current_condition[0].weatherIconUrl[0].value}}" alt="weather Img">
           </div>
           <div class="col-8">
             <div class="card-body">
-              <h5 class="card-title">({{item.current_condition[0].temp_C}}<span>&#8451;</span>/{{item.current_condition[0].temp_F}}<span>&#8457;</span>) {{item.current_condition[0].weatherDesc[0].value}}</h5>
-              <p class="card-text">Wind Speed: {{item.current_condition[0].windspeedKmph}}Km/hr, {{item.current_condition[0].winddirDegree}}<span>&#176;</span> </p>
+              <h5 class="card-title">
+                ({{item.current_condition[0].temp_C}}<span>&#8451;</span>/{{item.current_condition[0].temp_F}}<span>&#8457;</span>)
+                {{item.current_condition[0].weatherDesc[0].value}}</h5>
+              <p class="card-text">Wind Speed:
+                {{item.current_condition[0].windspeedKmph}}Km/hr,{{item.current_condition[0].winddirDegree}}<span>&#176;</span>
+              </p>
               <p class="card-text">uvIndex: {{item.current_condition[0].uvIndex}} </p>
-              <a [routerLink]="['/cityDashboard']" class="btn btn-primary">see more in "{{item.nearest_area[0].region[0].value}}"</a>
+              <a [routerLink]="['/cityDashboard',i]" class="btn btn-primary">see more in
+                "{{item.nearest_area[0].region[0].value}}"</a>
             </div>
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 </div>

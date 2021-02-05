@@ -7,7 +7,7 @@ import { LandingComponentComponent } from './Components/landing/landing.componen
 const routes: Routes = [
   { path: '', component: LandingComponentComponent },
   { path: 'landing', component: LandingComponentComponent },
-  { path: 'cityDashboard', component: CityWeatherDashboardComponent }
+  { path: 'cityDashboard/:cardIndex', component: CityWeatherDashboardComponent }
 
 ];
 

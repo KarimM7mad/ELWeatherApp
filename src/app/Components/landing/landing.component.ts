@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DoCheck, OnDestroy, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as d3 from 'd3';
 import { Subject } from 'rxjs';
@@ -13,45 +13,34 @@ import { DataPickerDialogComponent } from '../data-picker-dialog/data-picker-dia
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],
 })
-export class LandingComponentComponent implements OnInit, OnDestroy {
+export class LandingComponentComponent implements OnInit, OnDestroy, DoCheck {
   public cardsData = [];
   public locationsJSON = {};
   public closeResult = '';
   public canOpenModal = false;
-
   public isAllFinishedd = new Subject<boolean>();
-
-  // public landingCompData : {
-  //   location: apiResponse.data.request[0].query,
-  //   date: apiResponse.data.weather[0].date,
-  //   temp: apiResponse.data.current_condition[0].temp_C,
-  //   weatherDesc: apiResponse.data.current_condition[0].weatherDesc[0].value,
-  //   tempMaxC: apiResponse.data.weather[0].tempMaxC,
-  //   tempMinC: apiResponse.data.weather[0].tempMinC,
-  //   cloudcover: apiResponse.data.current_condition[0].cloudcover,
-  //   humidity: apiResponse.data.current_condition[0].humidity,
-  //   observation_time: apiResponse.data.current_condition[0].observation_time,
-  //   precipMM: apiResponse.data.current_condition[0].precipMM,
-  //   pressure: apiResponse.data.current_condition[0].pressure,
-  //   visibility: apiResponse.data.current_condition[0].visibility,
-  //   winddir16Point: apiResponse.data.weather[0].winddir16Point,
-  //   winddirDegree: apiResponse.data.weather[0].winddirDegree,
-  //   windspeed: apiResponse.data.weather[0].windspeedKmph,
-  //   icon: apiResponse.data.current_condition[0].weatherIconUrl[0].value,
-  // };
 
   constructor(
     private weatherService: WorldWeatherOnlineService,
     private locationService: LocationService,
     private locationModal: NgbModal,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
+  ngDoCheck(): void {
+    if (this.cardsData.length === 0) {
+      this.addCurrIPsWeather();
+    }
+    if (!this.isEmptyObject(this.locationsJSON)) {
+      this.getLocations();
+    }
+  }
 
   ngOnInit() {
-    // console.log('landingCompInit Started');
     if (localStorage.hasOwnProperty('cardsData')) {
       this.cardsData = JSON.parse(localStorage.getItem('cardsData'));
     }
+
     // open modal if locations exist
     if (localStorage.hasOwnProperty('locations')) {
       this.locationsJSON = JSON.parse(localStorage.getItem('locations'));
@@ -59,16 +48,17 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
         this.canOpenModal = true;
       }
     }
+
     this.weatherService.getCurrClientIP().subscribe(res => {
       let r = Math.floor(Math.random() * 127) + 128;
       let g = Math.floor(Math.random() * 127) + 128;
       let b = Math.floor(Math.random() * 127) + 128;
       d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')').text("IP from NgOnInit:" + res.ip);
     });
-    // console.log('landingCompInit Finished');
+
   }
 
-  getCurrIP() {
+  getCurrWeatherDetailsByIp() {
     // console.log('refresh Started');
     this.weatherService.getCurrClientIP().subscribe(res => {
       let r = Math.floor(Math.random() * 127) + 128;
@@ -89,15 +79,18 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
   }
 
-  addDummyData() {
-    // console.log('addDummyData Called');
-    this.weatherService.getPositionWeather('Alexandria', '1').subscribe((dataReceived) => {
+  addCurrIPsWeather() {
+    this.weatherService.getPositionWeather().subscribe((dataReceived) => {
       this.addToCardsIfNotExist(dataReceived);
       let r = Math.floor(Math.random() * 255);
       let g = Math.floor(Math.random() * 255);
       let b = Math.floor(Math.random() * 255);
-      d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
-      console.log('addDummyData call ended');
+      d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')').text("added From addCurrIPsWeather");
+    }, (err) => {
+      let r = Math.floor(Math.random() * 127) + 128;
+      let g = Math.floor(Math.random() * 127) + 128;
+      let b = Math.floor(Math.random() * 127) + 128;
+      d3.select('p').style('background-color', 'rgb(' + r + ',' + g + ',' + b + ')').text("CAN'T GET IP");
     });
 
   }
@@ -107,20 +100,6 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
     if (!this.canOpenModal) {
       return;
     }
-    // if (this.locationsJSONtoBeStored && (Object.keys(this.locationsJSONtoBeStored).length === 0)) {
-    //   this.getLocations();
-    // }
-
-    // const modalOptions = {
-    //   backdrop: true,
-    //   keyboard: true,
-    //   focus: true,
-    //   show: true,
-    //   ignoreBackdropClick: false,
-    //   class: 'modal-dialog modal-dialog-centered',
-    //   animated: true,
-    //   // role: 'document'
-    // };
 
     const modalRef = this.locationModal.open(DataPickerDialogComponent);
     modalRef.componentInstance.openningSrcId = 'openLocationModalBtn';
@@ -129,14 +108,53 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
       arg => {
         console.log("choices received");
         console.log(JSON.stringify(arg));
-        modalRef.close();
-        this.router.navigate(["/cityDashboard"]);
 
-        // go to Dashboard with the data 
+        var q = "";
+        if (arg["state"].length > 0 && arg["country"].length > 0) {
+          q = arg["state"] + "," + arg["country"];
+        } else {
+          if (arg["state"].length === 0)
+            q = arg["country"];
+          if (arg["country"].length === 0)
+            q = arg["state"];
+        }
+
+        console.log(q);
+
+        this.weatherService.getPositionWeather(q, '1').subscribe((dataReceived) => {
+          let index = this.addToCardsIfNotExist(dataReceived);
+          modalRef.close();
+          this.router.navigate(['/cityDashboard', index]);
+        });
 
       }
     );
 
+  }
+
+  getCardIndex(arg): Number {
+
+    for (let i = 0; i < this.cardsData.length; i++) {
+
+      if (arg["state"].length > 0 && arg["country"].length > 0) {
+        if (this.cardsData[i]['nearest_area'][0]['areaName'][0]['value'] == arg["state"] && this.cardsData[i]['nearest_area'][0]['country'][0]['value'] == arg["country"]) {
+          return i;
+        }
+      }
+      else {
+        if (arg["state"].length === 0) {
+          if (this.cardsData[i]['nearest_area'][0]['country'][0]['value'] == arg["country"]) {
+            return i;
+          }
+        }
+        if (arg["country"].length === 0) {
+          if (this.cardsData[i]['nearest_area'][0]['areaName'][0]['value'] == arg["state"]) {
+            return i;
+          }
+        }
+      }
+    }
+    return -1;
   }
 
   addToCardsIfNotExist(dataToAdd) {
@@ -145,7 +163,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < this.cardsData.length; i++) {
       if (this.cardsData[i]['nearest_area'][0]['region'][0]['value'] == dataToAdd['nearest_area'][0]['region'][0]['value']) {
-        return;
+        return i;
       }
     }
     this.cardsData.push(dataToAdd);
@@ -153,12 +171,17 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
     console.log(this.cardsData);
     console.log('JSON ADDED');
     console.log('SIZE OF CARDS DATA AFTER ADITION:' + this.cardsData.length);
+    return this.cardsData.length - 1;
   }
 
   ngOnDestroy(): void {
     if (this.cardsData.length > 0) {
       localStorage.removeItem('cardsData');
       localStorage.setItem('cardsData', JSON.stringify(this.cardsData));
+    }
+    if (!this.isEmptyObject(this.locationsJSON)) {
+      localStorage.removeItem('locations');
+      localStorage.setItem('locations', JSON.stringify(this.locationsJSON));
     }
   }
 
@@ -168,6 +191,7 @@ export class LandingComponentComponent implements OnInit, OnDestroy {
     }
     console.log("GETTING LOCATIONS STARTED");
     this.isAllFinishedd.subscribe(res => {
+      d3.select('p').style('background-color', 'green').text("Locations Accquired");
       localStorage.setItem('locations', JSON.stringify(this.locationsJSON));
       console.log(JSON.stringify(this.locationsJSON));
       this.canOpenModal = res;

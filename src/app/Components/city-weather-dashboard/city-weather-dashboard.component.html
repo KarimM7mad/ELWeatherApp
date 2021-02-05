@@ -1,35 +1,34 @@
-<div class="container" (window:resize)="onResize($event)" style="background-color: green">
+<div class="container" (window:resize)="onResize($event)">
 
-  <h1>Today's Weather Details</h1>
+  <h1>{{this.weatherDetails["nearest_area"][0]["areaName"][0].value}},{{this.weatherDetails["nearest_area"][0]["country"][0].value}}
+  </h1>
+
   <h3 style="background-color: darkcyan;">Tempreature along the day</h3>
-  <div class="container-fluid" style="background-color: yellow;">
+  <div class="container-fluid">
     <svg id="weatherTodaySVG" width="900" height="600"></svg>
   </div>
-
-  <h3 style="background-color: darkcyan;">other info</h3>
-  <div class="container-fluid" style="background-color: white;">
+  <h3 style="background-color: darkcyan;">Other Info</h3>
+  <div class="container-fluid">
     <table class="table">
       <tbody>
         <tr>
-          <th scope="row">Humidity</th>
-          <td>{{this.weatherDetails["cur"]}}</td>
+          <th scope="row">current temp</th>
+          <td>{{this.weatherDetails["current_condition"][0]["temp_C"]}} <span>&#8451;</span></td>
         </tr>
-
-
-        <tr>
-          <th scope="row">Windspeed (in Km/hr)</th>
-          <td>Mark</td>
-        </tr>
-
         <tr>
           <th scope="row">Humidity</th>
-          <td>Mark</td>
+          <td>{{this.weatherDetails["current_condition"][0]["humidity"]}}</td>
         </tr>
-
-
+        <tr>
+          <th scope="row">Windspeed</th>
+          <td>{{this.weatherDetails["current_condition"][0]["windspeedKmph"]}}
+            Km/hr,{{this.weatherDetails["current_condition"][0]["winddirDegree"]}}<span>&#176;</span></td>
+        </tr>
+        <tr>
+          <th scope="row">feels like</th>
+          <td>{{this.weatherDetails["current_condition"][0]["FeelsLikeC"]}} <span>&#8451;</span></td>
+        </tr>
       </tbody>
-
-
     </table>
   </div>
 
@@ -37,8 +36,8 @@
 
   <!-- WEATHER IN 15 day-->
 
-  <h3 style="background-color: darkcyan;">Weather in 15 days</h3>
-  <div class="container-fluid" style="background-color: yellow;">
+  <h3 style="background-color: darkcyan;">Tempreature in 15 days</h3>
+  <div class="container-fluid">
     <svg id="weatherIn15DaysSVG" width="900" height="600"></svg>
     <!-- <svg id="weatherSVG" style="background-color: yellow;"></svg> -->
   </div>
@@ -47,17 +46,18 @@
 
 
 
-<div class="container" (window:resize)="onResize($event)" style="background-color: green">
+<div class="container" (window:resize)="onResize($event)">
 
 
 
 
   <h1>Historical part</h1>
 
-  <h3 style="background-color: darkcyan;">Weather in 15 days</h3>
+  <!-- <h3 style="background-color: darkcyan;">Weather in 15 days</h3> -->
 
 
-  <div class="container-fluid" style="background-color: yellow;">
+  <div class="container-fluid">
+    <h1>under Development :(</h1>
     <svg id="weatherSVG" (window:resize)="onResize($event)" width="900" height="600"></svg>
     <!-- <svg id="weatherSVG" style="background-color: yellow;"></svg> -->
   </div>

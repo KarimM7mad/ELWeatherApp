@@ -12,7 +12,7 @@
 
       <!-- Landing DashBoard Btn -->
       <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/cityDashboard']" routerLinkActive="router-link-active">Dashboard</a>
+        <a class="nav-link" [routerLink]="['/cityDashboard',0]" routerLinkActive="router-link-active">Dashboard</a>
       </li>
 
     </ul>
@@ -20,6 +20,6 @@
 </nav>
 
 
-<div style="margin:3em 3em 3em 3em; background-color: orangered">
+<div style="margin:3em 3em 3em 3em;">
   <router-outlet></router-outlet>
 </div>
