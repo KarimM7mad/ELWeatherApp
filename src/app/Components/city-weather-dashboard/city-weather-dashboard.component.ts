@@ -1,6 +1,5 @@
-import { Component, OnInit, ɵgetDebugNode__POST_R3__ } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import { max } from 'rxjs/operators';
 
 @Component({
   selector: 'app-city-weather-dashboard',
@@ -23,86 +22,99 @@ export class CityWeatherDashboardComponent implements OnInit {
 
   constructor() { }
 
+  onResize(event): void {
+    this.showWeatherIn15DaysLineChart();
+  }
+
   ngOnInit(): void {
-
     console.log("Dashboard Opened");
-
     // to obtained By Location
     this.weatherDetails = JSON.parse(localStorage.getItem("cardsData"))[0];
-
     console.log(JSON.stringify(this.weatherDetails));
-
     this.extractDataFromWeatherDetailsJSON();
-    this.showWeatherIn15DaysLineChart();
 
+    this.showWeatherIn15DaysLineChart();
   }
 
 
   showWeatherIn15DaysLineChart() {
-
-
-
-
-   
-
-
-    var width = 600;
-    var height = 400;
- var svg = d3.select('#weatherSVG').attr('width',width ).attr('height', height);
-
-    var parseDate = d3.timeParse("%Y-%m-%d");
-
     var dataToView = [];
-
-
-    // get desired Data From each day
-    this.weatherDetails["weather"].forEach(oneDayWeatherData => {
-      // get temp from each day
-      this.extractedData.avgTempCin15Days[oneDayWeatherData.date] = oneDayWeatherData.avgtempC;
-      dataToView.push({ date: parseDate(oneDayWeatherData.date), temp: oneDayWeatherData.avgtempC });
-
-    });
-
-    // ;; debugger
-
-    var minDate = d3.min(dataToView, function (d) { return d["date"]; });
-    var maxDate = d3.max(dataToView, function (d) { return d["date"]; });
-    var maxTemp = d3.max(dataToView, function (d) { return d["temp"]; });
-
-    var y = d3.scaleLinear()
-      .domain([0, maxTemp])
-      .range([height, 0]);
-
-    var x = d3.scaleTime()
-      .domain([minDate, maxDate])
-      .range([0, width]);
-
-    var yAxis = d3.axisLeft(y);
-    var xAxis = d3.axisBottom(x);
-
-    var chartGrp = svg.append('g').attr('transform', 'translate(50,10)');
-
-    var line = d3.line()
-      .x(function (d) { return x(d["date"]); })
-      .y(function (d) { return y(d["temp"]); });
-
-
-    chartGrp.append('path').attr('d', line(dataToView));
-    chartGrp.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + height + ')').call(xAxis);
-    chartGrp.append('g').attr('class', 'y axis').call(yAxis);
-
-
-
-
-    // var scale = d3.scale.linear()
-    //   .domain([0, 1])
-    //   .range([${0,width}])
-
-
-
-
+    var parseDate = d3.timeParse("%Y-%m-%d");
+    // get Temp in 15 days
+    Object.keys(this.extractedData.avgTempCin15Days).forEach(key => {
+      dataToView.push({ date: parseDate(key), temp: this.extractedData.avgTempCin15Days[key] });
+    })
+    const svg = d3.select('#weatherSVG');
+    svg.selectAll('*').remove();
+    const width = +svg.node().parentNode.clientWidth;
+    const height = +svg.node().parentNode.clientHeight;
+    svg.attr("width", width).attr("height", height).attr("viewBox", '0 0 ' + width + ' ' + height + '\'');
+    const render = data => {
+      const title = 'Weather in 15 days';
+      const xValue = d => d["date"];
+      const xAxisLabel = 'day';
+      const yValue = d => d["temp"];
+      const yAxisLabel = 'Temperature in Celcius';
+      const margin = { top: 60, right: 40, bottom: 88, left: 70 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+      const xScale = d3.scaleTime()
+        .domain(d3.extent(data, xValue))
+        .range([0, innerWidth])
+        .nice();
+      const yScale = d3.scaleLinear()
+        // .domain(d3.extent(data, yValue))
+        .domain([(d3.min(data, yValue) - 2), (d3.max(data, yValue) - (-1))])
+        .range([innerHeight, 0])
+        .nice();
+      const g = svg.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+      const xAxis = d3.axisBottom(xScale)
+      // .tickSize(-innerHeight*0)
+      // .tickPadding(15);
+      const yAxis = d3.axisLeft(yScale)
+      // .tickSize(-innerWidth)
+      // .tickPadding(10);
+      const yAxisG = g.append('g').call(yAxis);
+      // yAxisG.selectAll('.domain').remove();
+      yAxisG.append('text')
+        .attr('class', 'axis-label')
+        .attr('y', -30)
+        .attr('x', -innerHeight / 2)
+        .attr('fill', 'black')
+        .attr('transform', `rotate(-90)`)
+        .attr('text-anchor', 'middle')
+        .text(yAxisLabel);
+      const xAxisG = g.append('g').call(xAxis).attr('transform', `translate(0,${innerHeight})`);
+      xAxisG.append('text')
+        .attr('class', 'axis-label')
+        .attr('y', 40)
+        .attr('x', innerWidth / 2)
+        .attr('fill', 'black')
+        .attr("dy", "1em")
+        .text(xAxisLabel);
+      const lineGenerator = d3.line()
+        .x(d => xScale(xValue(d)))
+        .y(d => yScale(yValue(d)))
+        .curve(d3.curveLinear);
+      g.append('path')
+        .datum(data)
+        .attr('d', lineGenerator)
+        .attr('class', 'line-path')
+        .attr("fill", "none")
+        .attr("stroke", "darkblue")
+        .attr("stroke-width", "5");
+      g.selectAll(".circle-germany")
+        .data(data)
+        .join("circle") // enter append
+        .attr("fill", "black")
+        .attr("stroke", "darkblue")
+        .attr("r", "8") // radius
+        .attr("cx", d => xScale(xValue(d)))   // center x passing through your xScale
+        .attr("cy", d => yScale(yValue(d)))   // center y through your yScale
+    };
+    render(dataToView);
   }
-
 
   public extractDataFromWeatherDetailsJSON() {
 

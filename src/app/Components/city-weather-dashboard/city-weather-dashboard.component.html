@@ -1,20 +1,27 @@
-<div class="container-fluid" style="background-color: green">
+<div class="container" style="background-color: green">
 
 
 
 
   <h1>Weather Details</h1>
 
-  <h3>Weather in 15 days</h3>
-  <svg id="weatherSVG" style="background-color: yellow; overflow: visible;"></svg>
+  <h3 style="background-color: darkcyan;">Weather in 15 days</h3>
 
-  <!-- <p>humidity</p>
+
+  <div class="container-fluid" style="background-color: darkslateblue;">
+    <svg id="weatherSVG" (window:resize)="onResize($event)" width="900" height="600" style="background-color: yellow;"></svg>
+    <!-- <svg id="weatherSVG" style="background-color: yellow;"></svg> -->
+  </div>
+
+</div>
+
+<!-- <p>humidity</p>
   <p>wind Speed!</p>
   <p>city-weather-dashboard works!</p>
   <p style="background-color: teal; word-wrap: break-word;">{{this.weatherDetails}}</p>
   <p>city-weather-dashboard works!</p> -->
 
-</div>
+<!-- </div> -->
 
 <!-- <div class="container-fluid" style="background-color: green">
 
